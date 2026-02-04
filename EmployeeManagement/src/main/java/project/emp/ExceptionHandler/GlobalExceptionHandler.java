@@ -1,50 +1,53 @@
 package project.emp.ExceptionHandler;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
-@ControllerAdvice
-public class GlobalExceptionHandler extends RuntimeException {
-
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+  //global exception should not extend any exception class
+  // Handles 404 - Resource Not Found
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+  public ResponseEntity<ProblemDetail> handleNotFound(ResourceNotFoundException ex) {
 
-    Map<String, Object> body = new HashMap<>();
-    body.put("timestamp", LocalDateTime.now());
-    body.put("status", HttpStatus.NOT_FOUND.value());
-    body.put("error", "NOT FOUND");
-    body.put("message", ex.getMessage());
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+    //ProblemDetails provides a standardized error structure
 
-    return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    problemDetail.setTitle("Resource Not Found");
+    problemDetail.setDetail(ex.getMessage());
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
   }
 
+  // Handles 400 - Bad Request
   @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
+  public ResponseEntity<ProblemDetail> handleBadRequest(BadRequestException ex) {
 
-    Map<String, Object> body = new HashMap<>();
-    body.put("timestamp", LocalDateTime.now());
-    body.put("status", HttpStatus.BAD_REQUEST.value());
-    body.put("error", "BAD REQUEST");
-    body.put("message", ex.getMessage());
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
-    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    problemDetail.setTitle("Bad Request");
+    problemDetail.setDetail(ex.getMessage());
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    return ResponseEntity.badRequest().body(problemDetail);
   }
 
+  // Handles 500 - Internal Server Error
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+  public ResponseEntity<ProblemDetail> handleGeneral(Exception ex) {
 
-    Map<String, Object> body = new HashMap<>();
-    body.put("timestamp", LocalDateTime.now());
-    body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-    body.put("error", "INTERNAL SERVER ERROR");
-    body.put("message", ex.getMessage());
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 
-    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    problemDetail.setTitle("Internal Server Error");
+    problemDetail.setDetail(ex.getMessage());
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
   }
 }

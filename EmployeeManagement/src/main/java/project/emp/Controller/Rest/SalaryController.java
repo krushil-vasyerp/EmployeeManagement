@@ -1,4 +1,4 @@
-package project.emp.Controller;
+package project.emp.Controller.Rest;
 
 
 import org.springframework.web.bind.annotation.*;
