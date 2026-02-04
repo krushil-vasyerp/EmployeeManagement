@@ -9,6 +9,18 @@
 > Once enum-based tables are created, PostgreSQL will **not allow values outside defined enum keywords**.
 
 ---
+### MAPPINGS
+
+> (Employee → Department &#40;Many-to-One&#41;)
+
+> (Employee → Desk        &#40;One-to-One&#41;)
+
+> (Employee → Salary      &#40;One-to-One&#41;)
+
+> (Employee → Task        &#40;One-to-Many&#41;)
+
+> (Employee → User        &#40;One-to-One&#41;)
+
 
 ## API Flow (Execution Order)
 
