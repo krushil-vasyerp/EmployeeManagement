@@ -2,6 +2,7 @@ package project.emp.Model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import project.emp.Model.Enums.DeskType;
@@ -32,7 +33,7 @@ public class Desk {
 
     @OneToOne
     @JoinColumn(name = "employee_id", unique = true)
-    @JsonIgnore
+    @JsonManagedReference
     private Employees employee;
 
 }

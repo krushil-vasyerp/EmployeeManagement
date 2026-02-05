@@ -8,7 +8,7 @@ import project.emp.Service.SalaryService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/salary")
+@RequestMapping("/api/sal")
 public class SalaryController {
 
     private SalaryService sservice;

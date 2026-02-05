@@ -40,8 +40,14 @@ public class DeskService {
     }
     @Transactional
     public void deleteDesk(Integer id) {
-        Desk desk = findDeskById(id);
-        desk.getEmployee().setDesk(null);
+        Desk desk = deskrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Desk not found"));
+        if(desk.getEmployee() != null){
+            desk.getEmployee().setDesk(null);
+            desk.setEmployee(null);
+        }
+
+        deskrepo.delete(desk);
     }
     //related with employee for resource allocation
     public Desk assignDeskToEmployee(Integer deskId, Integer employeeId) {

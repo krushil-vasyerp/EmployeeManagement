@@ -1,5 +1,6 @@
 package project.emp.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -52,8 +53,8 @@ public class Employees {
     @JsonIgnore
     private Users user;
 
-    @OneToOne(mappedBy = "employee" ,cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToOne(mappedBy = "employee")
+    @JsonBackReference
     private Desk desk;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL , orphanRemoval = true)
