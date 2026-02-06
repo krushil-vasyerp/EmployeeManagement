@@ -4,12 +4,17 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import project.emp.Model.Users;
+import project.emp.Service.AuthService;
 
 @Controller
 public class AuthPageController {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final AuthService authService;
+
+    public AuthPageController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @GetMapping("/")
     public String loginPage() {
@@ -27,28 +32,26 @@ public class AuthPageController {
                             HttpSession session,
                             Model model) {
 
-        String url = "http://localhost:9090/auth/login?username="
-                + username + "&password=" + password;
-
         try {
 
-            String token = restTemplate.postForObject(url, null, String.class);
+            Users user = authService.login(username, password);
 
-            session.setAttribute("token", token);
+            // Store logged-in user in session
+            session.setAttribute("user", user);
 
             return "redirect:/dashboard";
 
         } catch (Exception e) {
 
-            model.addAttribute("error", "Invalid credentials");
+            model.addAttribute("error", e.getMessage());
             return "login";
         }
     }
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session) {
-
-        if (session.getAttribute("token") == null)
+        System.out.println(session.getId());
+        if (session.getAttribute("user") == null)
             return "redirect:/";
 
         return "dashboard";
@@ -56,6 +59,7 @@ public class AuthPageController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
+
         session.invalidate();
         return "redirect:/";
     }

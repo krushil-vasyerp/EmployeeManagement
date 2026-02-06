@@ -53,11 +53,14 @@ public class SecurityConfig {
                 .requestMatchers("/salary").permitAll()
                 .anyRequest().permitAll()
         );
-
+//
+//        http.sessionManagement(session ->
+//                session
+//                        .invalidSessionUrl("/login?expired")
+//                        .maximumSessions(1)
+//        );
         return http.build();
     }
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(

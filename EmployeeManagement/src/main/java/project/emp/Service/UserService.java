@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.emp.ExceptionHandler.ResourceNotFoundException;
 import project.emp.Model.Employees;
+import project.emp.Model.Enums.Role;
 import project.emp.Model.Users;
 import project.emp.Repository.EmployeesRepository;
 import project.emp.Repository.UsersRepository;
@@ -51,6 +52,11 @@ public class UserService {
 
         Employees employee = erepo.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + employeeId));
+        if (user.getRole() == Role.ADMIN &&
+                urepo.existsByRole(Role.ADMIN)) {
+
+            throw new RuntimeException("Only one ADMIN allowed");
+        }
 
         if (urepo.existsByEmployee(employee)) {
             throw new ResourceNotFoundException("User already exists for this employee");
@@ -64,12 +70,19 @@ public class UserService {
     }
 
     public Users updateUser(Integer userId, Users user) {
+
         Users existing = getUserById(userId);
-        user.setPassword(
-                passwordEncoder.encode(user.getPassword())
-        );
+        if (user.getRole() == Role.ADMIN &&
+                !existing.getRole().equals(Role.ADMIN) &&
+                urepo.existsByRole(Role.ADMIN)) {
+
+            throw new RuntimeException("Only one ADMIN allowed");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setId(existing.getId());
         user.setEmployee(existing.getEmployee());
+
         return urepo.save(user);
     }
 
